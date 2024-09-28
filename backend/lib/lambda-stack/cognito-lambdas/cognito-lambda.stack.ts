@@ -27,6 +27,12 @@ export class CognitoLambdaStack extends Stack {
       props,
     );
 
+
+    this._createFromCognitoToNeo4jLambda(
+      cognitoUserPool,
+      vpc,
+    );
+
   }
 
 
@@ -39,7 +45,7 @@ export class CognitoLambdaStack extends Stack {
       this,
       'CreateUserInNeo4jLambda',
       {
-        entry:createLambdaPath(),
+        entry:createLambdaPath("create-user-in-neo4j",),
         handler: 'handler',
         vpc,
         environment: {

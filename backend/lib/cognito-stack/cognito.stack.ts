@@ -18,6 +18,7 @@ import { SystemRoles } from '../../src/backend/src/common/auth/system-roles/syst
 export class CognitoStack extends Stack {
   cognitoUserPool: UserPool;
   cognitoUserPoolClient: UserPoolClient;
+
   // cognitoUserPoolDomain: UserPoolDomain;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -27,7 +28,7 @@ export class CognitoStack extends Stack {
       props,
     );
 
-    this._createUserPool()
+    this._createUserPool();
   }
 
 
@@ -100,7 +101,7 @@ export class CognitoStack extends Stack {
           UserPoolClientIdentityProvider.COGNITO,
         ],
         preventUserExistenceErrors: true,
-        userPool:cognitoUserPool,
+        userPool: cognitoUserPool,
       });
 
     const identityPool = new CfnIdentityPool(this, 'IdentityPool', {
@@ -114,24 +115,10 @@ export class CognitoStack extends Stack {
     });
 
 
-    // const userPoolDomainPrefix = `hackyeah-${this.stackName.toLowerCase()}`;
-    //
-    // const userPoolDomain = new UserPoolDomain(
-    //   this,
-    //   "CognitoUserPoolDomain",
-    //   {
-    //     cognitoDomain: {
-    //       domainPrefix: userPoolDomainPrefix,
-    //     },
-    //     userPool: cognitoUserPool,
-    //   }
-    // );
+    this._createCognitoGroups(cognitoUserPool);
 
-    this._createCognitoGroups(cognitoUserPool)
-
-    this.cognitoUserPool = cognitoUserPool
+    this.cognitoUserPool = cognitoUserPool;
     this.cognitoUserPoolClient = userPoolClient;
-    // this.cognitoUserPoolDomain = userPoolDomain;
   }
 
   private _createCognitoGroups(userPool: UserPool) {

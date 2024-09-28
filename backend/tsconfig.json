@@ -23,6 +23,7 @@
     "typeRoots": [
       "./node_modules/@types"
     ],
+    "baseUrl": ".",
     "paths": {
       "@lambda-utils/*": [
         "src/utils/*"
