@@ -29,7 +29,8 @@ export class CreateActivityService {
     this.neo4jService.beginTransaction();
     const response = await this.neo4jService.write(cypher, params);
 
-    this.logger.debug({ response });
+
+    return ActivityEntity.fromNeo4jResponse(response.records[0]);
 
   }
 
