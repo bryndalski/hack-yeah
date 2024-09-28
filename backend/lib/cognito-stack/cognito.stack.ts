@@ -1,5 +1,8 @@
-import { RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import { SystemRoles } from "@backend/common/auth/system-roles/system-roles";
+import { User } from "@backend/user-module/entities/user";
+
+import { createLambdaPath } from "@lambda-utils/create-lambda-path/create-lambda-path";
+
 import {
   AccountRecovery,
   CfnIdentityPool,
@@ -10,30 +13,36 @@ import {
   UserPoolClient,
   UserPoolClientIdentityProvider,
   UserPoolEmail,
-} from 'aws-cdk-lib/aws-cognito';
-import { User } from '../../src/backend/src/user-module/entities/user';
-import { SystemRoles } from '../../src/backend/src/common/auth/system-roles/system-roles';
+  UserPoolOperation,
+} from "aws-cdk-lib/aws-cognito";
+import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 
+import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
+
+type CognitoStackProps = StackProps & {
+  vpc: Vpc;
+};
 
 export class CognitoStack extends Stack {
   cognitoUserPool: UserPool;
   cognitoUserPoolClient: UserPoolClient;
-  // cognitoUserPoolDomain: UserPoolDomain;
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(
-      scope,
-      id,
-      props,
-    );
+  constructor(
+    scope: Construct,
+    id: string,
+    { vpc, ...props }: CognitoStackProps
+  ) {
+    super(scope, id, props);
 
-    this._createUserPool()
+    this._createUserPool(vpc);
   }
 
-
-  private _createUserPool() {
-    const cognitoUserPool = new UserPool(this, 'HackYeahUsers', {
-      userPoolName: 'HackYeahUsers',
+  private _createUserPool(vpc: Vpc) {
+    const cognitoUserPool = new UserPool(this, "HackYeahUsers", {
+      userPoolName: "HackYeahUsers",
       selfSignUpEnabled: true,
       signInAliases: {
         email: true,
@@ -67,43 +76,40 @@ export class CognitoStack extends Stack {
         },
       },
       customAttributes: {
-        [User.CognitoCustomAttributes.userId]: new StringAttribute({ mutable: false }),
+        [User.CognitoCustomAttributes.userId]: new StringAttribute({
+          mutable: false,
+        }),
       },
       removalPolicy: RemovalPolicy.DESTROY,
-
     });
 
-
-    const domains = ['http://localhost:3000'];
-    const userPoolClient = new UserPoolClient(this, 'HackYeahUserPoolClient',
-      {
-        authFlows: {
-          userPassword: true,
-          userSrp: true,
+    const domains = ["http://localhost:3000"];
+    const userPoolClient = new UserPoolClient(this, "HackYeahUserPoolClient", {
+      authFlows: {
+        userPassword: true,
+        userSrp: true,
+      },
+      disableOAuth: false,
+      oAuth: {
+        callbackUrls: domains.map((domain) => `${domain}/sign-in/`),
+        flows: {
+          authorizationCodeGrant: true,
         },
-        disableOAuth: false,
-        oAuth: {
-          callbackUrls: domains.map((domain) => `${domain}/sign-in/`),
-          flows: {
-            authorizationCodeGrant: true,
-          },
-          logoutUrls: domains.map((domain) => `${domain}/sign-out/`),
-          scopes: [
-            OAuthScope.EMAIL,
-            OAuthScope.PHONE,
-            OAuthScope.PROFILE,
-            OAuthScope.OPENID,
-          ],
-        },
-
-        supportedIdentityProviders: [
-          UserPoolClientIdentityProvider.COGNITO,
+        logoutUrls: domains.map((domain) => `${domain}/sign-out/`),
+        scopes: [
+          OAuthScope.EMAIL,
+          OAuthScope.PHONE,
+          OAuthScope.PROFILE,
+          OAuthScope.OPENID,
         ],
-        preventUserExistenceErrors: true,
-        userPool:cognitoUserPool,
-      });
+      },
 
-    const identityPool = new CfnIdentityPool(this, 'IdentityPool', {
+      supportedIdentityProviders: [UserPoolClientIdentityProvider.COGNITO],
+      preventUserExistenceErrors: true,
+      userPool: cognitoUserPool,
+    });
+
+    const identityPool = new CfnIdentityPool(this, "IdentityPool", {
       allowUnauthenticatedIdentities: false,
       cognitoIdentityProviders: [
         {
@@ -113,25 +119,15 @@ export class CognitoStack extends Stack {
       ],
     });
 
+    cognitoUserPool.addTrigger(
+      UserPoolOperation.PRE_SIGN_UP,
+      this._createFromCognitoToNeo4jLambda(vpc)
+    );
 
-    // const userPoolDomainPrefix = `hackyeah-${this.stackName.toLowerCase()}`;
-    //
-    // const userPoolDomain = new UserPoolDomain(
-    //   this,
-    //   "CognitoUserPoolDomain",
-    //   {
-    //     cognitoDomain: {
-    //       domainPrefix: userPoolDomainPrefix,
-    //     },
-    //     userPool: cognitoUserPool,
-    //   }
-    // );
+    this._createCognitoGroups(cognitoUserPool);
 
-    this._createCognitoGroups(cognitoUserPool)
-
-    this.cognitoUserPool = cognitoUserPool
+    this.cognitoUserPool = cognitoUserPool;
     this.cognitoUserPoolClient = userPoolClient;
-    // this.cognitoUserPoolDomain = userPoolDomain;
   }
 
   private _createCognitoGroups(userPool: UserPool) {
@@ -141,5 +137,30 @@ export class CognitoStack extends Stack {
         userPoolId: userPool.userPoolId,
       });
     });
+  }
+
+  private _createFromCognitoToNeo4jLambda(vpc: Vpc) {
+    const secret = Secret.fromSecretNameV2(
+      this,
+      "lambdaIndexerImportedSecret",
+      "NEO4J_CONNECTION_SECRET"
+    );
+
+    const createUserInNeo4j = new NodejsFunction(
+      this,
+      "CreateUserInNeo4jLambda",
+      {
+        entry: createLambdaPath("create-user-in-neo4j"),
+        handler: "handler",
+        vpc,
+        environment: {
+          SECRET_ARN: secret.secretArn,
+        },
+      }
+    );
+
+    secret.grantRead(createUserInNeo4j);
+
+    return createUserInNeo4j;
   }
 }

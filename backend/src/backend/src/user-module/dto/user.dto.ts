@@ -1,5 +1,4 @@
 export class UserDto {
-
   id: string;
 
   email: string;
@@ -9,5 +8,4 @@ export class UserDto {
   lastName: string;
 
   gender: string;
-
 }
