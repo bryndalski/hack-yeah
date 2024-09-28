@@ -10,11 +10,12 @@
   "importOrderSortSpecifiers": true,
   "importOrder": [
     "^@aws/(.*)$",
-    "<THIRD_PARTY_MODULES>",
+    "@nestjs/(.*)$",
     "^@backend/(.*)$",
     "^@lambda-utils/(.*)$",
     "aws-cdk-lib/(.*)$",
     "^@/(.*)$",
+    "<THIRD_PARTY_MODULES>",
     "^[./]"
   ],
   "plugins": ["@trivago/prettier-plugin-sort-imports"]

@@ -1,8 +1,8 @@
+import { Vpc } from "aws-cdk-lib/aws-ec2";
+
 import * as cdk from "aws-cdk-lib";
 import { Stack } from "aws-cdk-lib";
 import type { Construct } from "constructs";
-
-import { Vpc } from "aws-cdk-lib/aws-ec2";
 
 export class HackYeahVpcStack extends Stack {
   vpc: Vpc;

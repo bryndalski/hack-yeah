@@ -1,6 +1,3 @@
-import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
-import { Construct } from "constructs";
-
 import { SystemRoles } from "@backend/common/auth/system-roles/system-roles";
 import { User } from "@backend/user-module/entities/user";
 
@@ -21,6 +18,9 @@ import {
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
+
+import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
 
 type CognitoStackProps = StackProps & {
   vpc: Vpc;
