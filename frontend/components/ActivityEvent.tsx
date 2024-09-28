@@ -1,6 +1,7 @@
 import React from "react";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 import { TabBarIcon } from "./navigation/TabBarIcon";
+import { Link } from "expo-router";
 
 type ActivityEventProps = {
   proficiencyLevel: string;
@@ -37,49 +38,51 @@ const ActivityEvent = ({
   const formattedDate = getFormattedDate();
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={{ uri: placeholderImage }}
-        resizeMode="cover"
-        style={styles.image}
-        imageStyle={{
-          borderRadius: 10,
-        }}
-      >
-        <View style={styles.wrapper}>
-          <Text style={{ ...styles.text, ...styles.badge }}>
-            {proficiencyLevel}
-          </Text>
+    <Link href={`/event/1`}>
+      <View style={styles.container}>
+        <ImageBackground
+          source={{ uri: placeholderImage }}
+          resizeMode="cover"
+          style={styles.image}
+          imageStyle={{
+            borderRadius: 10,
+          }}
+        >
+          <View style={styles.wrapper}>
+            <Text style={{ ...styles.text, ...styles.badge }}>
+              {proficiencyLevel}
+            </Text>
 
-          <View style={styles.activityInfo}>
-            <Text style={{ ...styles.text, ...styles.name }}>{name}</Text>
+            <View style={styles.activityInfo}>
+              <Text style={{ ...styles.text, ...styles.name }}>{name}</Text>
 
-            <View style={styles.footer}>
-              {locationName && (
-                <Text style={styles.footerItem}>
-                  <TabBarIcon name="location" color="white" size={14} />
-                  {locationName}
-                </Text>
-              )}
+              <View style={styles.footer}>
+                {locationName && (
+                  <Text style={styles.footerItem}>
+                    <TabBarIcon name="location" color="white" size={14} />
+                    {locationName}
+                  </Text>
+                )}
 
-              {participantsInfo && (
-                <Text style={styles.footerItem}>
-                  <TabBarIcon name="people" color="white" size={14} />
-                  {participantsInfo}
-                </Text>
-              )}
+                {participantsInfo && (
+                  <Text style={styles.footerItem}>
+                    <TabBarIcon name="people" color="white" size={14} />
+                    {participantsInfo}
+                  </Text>
+                )}
 
-              {formattedDate && (
-                <Text style={styles.footerItem}>
-                  <TabBarIcon name="calendar" color="white" size={14} />
-                  {formattedDate}
-                </Text>
-              )}
+                {formattedDate && (
+                  <Text style={styles.footerItem}>
+                    <TabBarIcon name="calendar" color="white" size={14} />
+                    {formattedDate}
+                  </Text>
+                )}
+              </View>
             </View>
           </View>
-        </View>
-      </ImageBackground>
-    </View>
+        </ImageBackground>
+      </View>
+    </Link>
   );
 };
 

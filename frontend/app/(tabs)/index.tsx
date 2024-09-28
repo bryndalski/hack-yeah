@@ -1,8 +1,4 @@
 import { Image, StyleSheet, Platform, ScrollView } from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import Header from "@/components/Header";
 import ActivityEvent from "@/components/ActivityEvent";
 

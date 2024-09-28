@@ -37,7 +37,7 @@ export default function RootLayout() {
     <GluestackUIProvider mode="light">
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Back" }} />
           <Stack.Screen name="+not-found" />
         </Stack>
       </ThemeProvider>
