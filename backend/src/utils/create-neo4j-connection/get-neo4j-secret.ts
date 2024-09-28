@@ -1,5 +1,6 @@
-import { SecretsManager } from '@aws-sdk/client-secrets-manager';
-import { Neo4JData } from './neo4j-connection.types';
+import { SecretsManager } from "@aws-sdk/client-secrets-manager";
+
+import { Neo4JData } from "./neo4j-connection.types";
 
 /**
  * Get the secrets from AWS Secrets Manager. The secret is a JSON object with the following structure:

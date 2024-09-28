@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/require-await */
-import type { Driver } from 'neo4j-driver';
-import neo4j from 'neo4j-driver';
-import { Neo4JData } from './neo4j-connection.types';
+import type { Driver } from "neo4j-driver";
+import neo4j from "neo4j-driver";
+
+import { Neo4JData } from "./neo4j-connection.types";
 
 /**
  * Create a neo4j driver

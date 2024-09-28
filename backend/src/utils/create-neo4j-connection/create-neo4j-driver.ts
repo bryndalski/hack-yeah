@@ -1,6 +1,10 @@
-import type { Driver } from 'neo4j-driver';
-import { getSecrets } from '@lambda-utils/create-neo4j-connection/get-neo4j-secret';
-import { createDriverByNeoData } from '@lambda-utils/create-neo4j-connection/create-neo-driver-data';
+import type { Driver } from "neo4j-driver";
+
+import { createDriverByNeoData } from "@lambda-utils/create-neo4j-connection/create-neo-driver-data";
+import { getSecrets } from "@lambda-utils/create-neo4j-connection/get-neo4j-secret";
+
+import { createDriverByNeoData } from "@lambda-utils/create-neo4j-connection/create-neo-driver-data";
+import { getSecrets } from "@lambda-utils/create-neo4j-connection/get-neo4j-secret";
 
 /**
  * Create a neo4j driver using the secret arn

@@ -1,19 +1,13 @@
 export class SystemRoles {
-
-  static get Admin(){
-    return "admin"
+  static get Admin() {
+    return "admin";
   }
 
-  static get User(){
-    return "user"
+  static get User() {
+    return "user";
   }
 
-
-  static get AllSystemRoles(){
-    return [
-      SystemRoles.Admin,
-      SystemRoles.User
-    ]
+  static get AllSystemRoles() {
+    return [SystemRoles.Admin, SystemRoles.User];
   }
-
 }

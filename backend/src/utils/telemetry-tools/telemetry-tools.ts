@@ -1,11 +1,11 @@
-import { Logger } from '@aws-lambda-powertools/logger';
-import { injectLambdaContext } from '@aws-lambda-powertools/logger/middleware';
-import { Metrics } from '@aws-lambda-powertools/metrics';
-import { logMetrics } from '@aws-lambda-powertools/metrics/middleware';
-import { Tracer } from '@aws-lambda-powertools/tracer';
-import { captureLambdaHandler } from '@aws-lambda-powertools/tracer/middleware';
+import { Logger } from "@aws-lambda-powertools/logger";
+import { injectLambdaContext } from "@aws-lambda-powertools/logger/middleware";
+import { Metrics } from "@aws-lambda-powertools/metrics";
+import { logMetrics } from "@aws-lambda-powertools/metrics/middleware";
+import { Tracer } from "@aws-lambda-powertools/tracer";
+import { captureLambdaHandler } from "@aws-lambda-powertools/tracer/middleware";
 
-import { TelemetryTools } from './telemetry-tools.types';
+import { TelemetryTools } from "./telemetry-tools.types";
 
 /**
  * Get instances of all the _telemetry tools we use.
